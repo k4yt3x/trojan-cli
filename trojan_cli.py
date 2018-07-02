@@ -11,12 +11,24 @@ Licensed under the GNU General Public License Version 3 (GNU GPL v3),
 (C) 2018 K4YT3X
 """
 import avalon_framework as avalon
+import argparse
 import json
 import os
 import random
 import string
 
-VERSION = '1.0'
+VERSION = '1.0.1'
+
+
+def process_arguments():
+    """ This function parses all command line arguments """
+    parser = argparse.ArgumentParser()
+    control_group = parser.add_argument_group('Controls')
+    control_group.add_argument('-a', '--add', help='Add a user', action='store', default=False)
+    control_group.add_argument('-d', '--delete', help='Delete a user', action='store', default=False)
+    control_group.add_argument('-i', '--interactive', help='Enter trojan cli interactive shell', action='store_true', default=False)
+    control_group.add_argument('-v', '--version', help='Prints program version and exit', action='store_true', default=False)
+    return parser.parse_args()
 
 
 class trojan_server:
@@ -92,18 +104,35 @@ class trojan_config:
             if command[0] == 'help':
                 self.print_help()
             elif command[0] == 'adduser':
+                if ' ' in command[1]:
+                    avalon.error('There cannot be spaces in usernames')
+                    continue
                 self.add_user(command[1])
             elif command[0] == 'deluser':
+                if ' ' in command[1]:
+                    avalon.error('There cannot be spaces in usernames')
+                    continue
                 self.del_user(command[1])
             else:
                 self.print_help()
 
 
-trojan_config = trojan_config('/etc/trojan.json')
-trojan_config.command_interpreter()
+# /////////////////// Execution /////////////////// #
 
-'''
-# This is deprecated
-while True:
-    exec(input('>>> '))
-'''
+args = process_arguments()
+if args.version:  # prints program legal / dev / version info
+    print('Trojan CLI Version: ' + VERSION)
+    print('Author: K4YT3X')
+    print('License: GNU GPL v3')
+    print('Github Page: https://k4yt3x.com/k4yt3x/Trojan_CLI')
+    print('Contact: k4yt3x@protonmail.com\n')
+    exit(0)
+
+trojan_config = trojan_config('/etc/trojan.json')
+
+if args.add:
+    trojan_config.add_user(args.add)
+if args.delete:
+    trojan_config.del_user(args.delete)
+if args.interactive:
+    trojan_config.command_interpreter()
