@@ -13,47 +13,22 @@ Trojan CLI is a command line tool for configuring trojan servers. This software 
 
 </br>
 
-## Download
-
-Download Trojan CLI
+## Download and Install
 ```
-$ git clone https://k4yt3x.com/k4yt3x/Trojan_CLI.git
-$ cd Trojan_CLI/
+$ git clone https://k4yt3x.com/k4yt3x/Trojan_CLI.git  # Clone repo
+$ cd Trojan_CLI/                                      # Enter repo directory
 ```
-
-Launch software
-```
-$ sudo python3 trojan_cli.py
-```
-
-</br>
 
 ## Express Actions
-
-To add one user called "Alice"
 ```
-$ python3 trojan_cli.py -a Alice
+$ sudo python3 trojan_cli.py -a Alice    # Add user Alice
+$ sudo python3 trojan_cli.py -d Alice    # Delete user Alice
 ```
-Then the password will be displayed on the screen.
-
-To delete user called "Alice"
-```
-$ python3 trojan_cli.py -d Alice
-```
-Then user Alice will be deleted from the server configuration.
-
-</br>
 
 ## Interactive Shell
 
-To add one user called "Alice"
 ```
->>> adduser Alice
+$ sudo python3 trojan_cli.py -i  # Enter interactive shell
+>>> adduser Alice                # Add user Alice
+>>> deluser Alice                # Delete user Alice
 ```
-Then the password will be displayed on the screen.
-
-To delete user called "Alice"
-```
->>> deluser Alice
-```
-Then user Alice will be deleted from the server configuration.
