@@ -4,7 +4,7 @@
 Name: Trojan CLI
 Dev: K4YT3X
 Date Created: July 1, 2018
-Last Modified: July 1, 2018
+Last Modified: July 7, 2018
 
 Licensed under the GNU General Public License Version 3 (GNU GPL v3),
     available at: https://www.gnu.org/licenses/gpl-3.0.txt
@@ -17,7 +17,7 @@ import os
 import random
 import string
 
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 
 
 def process_arguments():
@@ -32,6 +32,12 @@ def process_arguments():
 
 
 class trojan_server:
+    """ Trojan server service controller
+
+    This class controls the trojan server service
+    and provides a python interface to start, stop,
+    restart and reload the trojan server.
+    """
 
     def __init__(self):
         if os.getuid() != 0:
@@ -49,8 +55,20 @@ class trojan_server:
         avalon.info('Restarting trojan server')
         os.system('systemctl restart trojan')
 
+    def reload(self):
+        avalon.info('Reloading trojan server')
+        os.system('systemctl reload trojan')
+
 
 class trojan_config:
+    """ Trojan configuration controller
+
+    This class controls the trojan configuration file.
+    Functionalities includes:
+        - Add user
+        - Delete user
+        - Interactive shell
+    """
 
     def __init__(self, config_path):
         self.tserver = trojan_server()
@@ -58,18 +76,25 @@ class trojan_config:
         self.read_config()
 
     def read_config(self):
+        """ Read trojan configuration into memory"""
         avalon.dbgInfo('Reading config from: {}'.format(self.config_path))
         with open(self.config_path, 'r') as conf:
             self.config = json.load(conf)
             conf.close()
 
     def write_config(self):
+        """ Write memory into trojan configuration"""
         avalon.dbgInfo('Writing config to: {}'.format(self.config_path))
         with open(self.config_path, 'w') as conf:
             json.dump(self.config, conf, indent=2)
             conf.close()
 
     def add_user(self, username):
+        """ Add a user
+
+        This method adds a user into the configuration
+        file of trojan and reloads the server.
+        """
         for password in self.config['password']:
             if username.lower() == password.split(':')[0].lower():
                 avalon.error('Aborting: user already exist')
@@ -82,6 +107,11 @@ class trojan_config:
         self.tserver.restart()
 
     def del_user(self, username):
+        """ Delete a user
+
+        Delete a user from the config and reloads the
+        trojan service.
+        """
         found = False
         for password in self.config['password']:
             if username.lower() == password.split(':')[0].lower():
@@ -97,21 +127,21 @@ class trojan_config:
         print('adduser [username]')
         print('deluser [username]')
 
-    def command_interpreter(self):
+    def interactive(self):
+        """ Interactive shell
+
+        This method drops the user into an interactive
+        shell which provide them access to all functions
+        on the fly.
+        """
         while True:
             raw_input = input('>>> ')
             command = raw_input.lower().split(' ')
             if command[0] == 'help':
                 self.print_help()
             elif command[0] == 'adduser':
-                if ' ' in command[1]:
-                    avalon.error('There cannot be spaces in usernames')
-                    continue
                 self.add_user(command[1])
             elif command[0] == 'deluser':
-                if ' ' in command[1]:
-                    avalon.error('There cannot be spaces in usernames')
-                    continue
                 self.del_user(command[1])
             else:
                 self.print_help()
@@ -125,7 +155,7 @@ if args.version:  # prints program legal / dev / version info
     print('Author: K4YT3X')
     print('License: GNU GPL v3')
     print('Github Page: https://k4yt3x.com/k4yt3x/Trojan_CLI')
-    print('Contact: k4yt3x@protonmail.com\n')
+    print('Contact: narexium@gmail.com\n')
     exit(0)
 
 trojan_config = trojan_config('/etc/trojan.json')
@@ -135,4 +165,4 @@ if args.add:
 if args.delete:
     trojan_config.del_user(args.delete)
 if args.interactive:
-    trojan_config.command_interpreter()
+    trojan_config.interactive()
