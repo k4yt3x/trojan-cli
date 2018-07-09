@@ -158,7 +158,7 @@ if args.version:  # prints program legal / dev / version info
     print('Contact: narexium@gmail.com\n')
     exit(0)
 
-trojan_config = trojan_config('/etc/trojan.json')
+trojan_config = trojan_config('/etc/trojan/config.json')
 
 if args.add:
     trojan_config.add_user(args.add)
